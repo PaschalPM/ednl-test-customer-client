@@ -1,0 +1,17 @@
+<ul class="px-2">
+    @for(navItem of navlist; track navItem.text){
+    <li class="text-[#747682] hover:bg-[#0053A61A] my-0.5">
+        <a [routerLink]="navItem.link" [class.active]="isRouteActive(navItem.link)" class="block py-3 h-full">
+            <span class="px-4 flex gap-2 items-center">
+                @if(isRouteActive(navItem.link)){
+                <ng-container *ngComponentOutlet="navItem.iconComponent; inputs: {stroke:'#005386'}"></ng-container>
+                }
+                @else {
+                <ng-container *ngComponentOutlet="navItem.iconComponent"></ng-container>
+                }
+                {{ navItem.text}}
+            </span>
+        </a>
+    </li>
+    }
+</ul>
