@@ -5,11 +5,16 @@ import { UnderConstructionComponent } from './widgets/under-construction/under-c
 import { QuickActionComponent } from './pages/quick-action/quick-action.component';
 import { TeamsComponent } from './pages/teams/teams.component';
 import { SettingsComponent } from './pages/settings/settings.component'
+import { NewComponent as CustomersNewComponent } from './pages/customers/new/new.component';
 
 export const routes: Routes = [
     {
         path: 'customers',
         component: CustomersIndexComponent
+    },
+    {
+        path: 'customers/new',
+        component: CustomersNewComponent
     },
     {
         path: 'quick-action',

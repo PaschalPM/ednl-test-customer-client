@@ -39,6 +39,6 @@ export class NavListComponent {
   constructor(private router: Router) { }
 
   isRouteActive(route: string): boolean {
-    return this.router.url === route;
+    return this.router.url.startsWith(route);
   }
 }

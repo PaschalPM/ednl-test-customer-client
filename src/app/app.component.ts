@@ -10,4 +10,8 @@ import { SidebarComponent } from "./widgets/sidebar/sidebar.component";
 })
 export class AppComponent {
   title = 'customer-client';
+
+  ngOnInit(): void {
+
+  }
 }

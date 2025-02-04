@@ -1,22 +1,24 @@
-<div class="h-[64px]">
-    Search customer details
-</div>
-<div class="flex justify-between w-full">
+<section class="text-gray-700">
+    <div class="flex justify-center">
+        <app-search-input placeholder="Search Customer details" (search)="onSearch($event)" />
+    </div>
+    <div class="flex justify-between items-center w-full">
+        <div>
+            <app-heading text="Customers" />
+            <small>Create, edit and manage your customers.</small>
+        </div>
+        <a routerLink="/customers/new" class="bg-[#0053A6] text-white flex items-center gap-2 px-4 rounded-md h-[40px]">
+            <app-add-person />
+            Add new customer
+        </a>
+    </div>
+    <app-customer-overview-card [totalCustomers]="totalCustomers" />
+    <app-search-input placeholder="Search Customers" (search)="onSearch($event)" [small]="true" />
 
     <div>
-        <h1>Customers</h1>
-        <small>Create, edit and manage your customers.</small>
+        <ag-grid-angular rowModelType='infinite' [pagination]="true" [paginationPageSize]="50" [cacheBlockSize]="50"
+            [columnDefs]="columnDefs" [animateRows]="true" [rowHeight]="40" rowClass='cursor-pointer'
+            [datasource]="datasource" class="h-[calc(100vh-50px)]" (gridReady)="onGridReady($event)">
+        </ag-grid-angular>
     </div>
-    <div>
-        Add new customer
-    </div>
-</div>
-
-<div>
-    All Customer
-    1300
-</div>
-
-<div>
-    Table
-</div>
+</section>
