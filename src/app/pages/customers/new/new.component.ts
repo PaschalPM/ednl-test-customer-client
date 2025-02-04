@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CustomersService } from '../../../services/api/customers.service';
-import { Router } from '@angular/router';
+import { Component, OnDestroy } from '@angular/core';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HeadingComponent } from '../../../components/heading/heading.component';
 import { CustomerFormService } from '../../../services/form/customer-form.service';
 
@@ -13,7 +11,8 @@ import { CustomerFormService } from '../../../services/form/customer-form.servic
   templateUrl: './new.component.html',
   styleUrl: './new.component.css'
 })
-export class NewComponent {
+export class NewComponent implements OnDestroy {
+  title = "Create Customer"
   customerFormGroup!: FormGroup
   controlNames: string[] = []
 
@@ -26,7 +25,7 @@ export class NewComponent {
   }
 
   setControlNames() {
-    this.controlNames = this.customerFormService.getControlNames(this.customerFormGroup)
+    this.customerFormService.setControlNames(this.customerFormGroup, this.controlNames)
   }
 
   isControlRequired(controlName: string) {
@@ -42,5 +41,8 @@ export class NewComponent {
   }
   onCreate() {
     this.customerFormService.onCreate(this.customerFormGroup)
+  }
+  ngOnDestroy(): void {
+    this.customerFormService.resetIsSubmitting()
   }
 }

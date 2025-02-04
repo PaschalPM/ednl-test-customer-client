@@ -1,5 +1,5 @@
 <div class=" m-auto py-2 text-gray-700">
-    <app-heading text="Create Customer"/>
+    <app-heading [text]="title"/>
 
     <form [formGroup]="customerFormGroup" class="flex flex-wrap gap-2 justify-between items-center p-6 shadow-2xl"
         (submit)="onCreate()">

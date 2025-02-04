@@ -8,8 +8,13 @@ import { SettingsComponent } from './pages/settings/settings.component'
 import { NewComponent as CustomersNewComponent } from './pages/customers/new/new.component';
 import { ShowComponent as CustomersShowComponent } from './pages/customers/show/show.component';
 import { EditComponent as CustomersEditComponent } from './pages/customers/edit/edit.component';
+import { HomeComponent } from './pages/home/home.component';
 
 export const routes: Routes = [
+    {
+        path: '',
+        component: HomeComponent
+    },
     {
         path: 'customers',
         component: CustomersIndexComponent
