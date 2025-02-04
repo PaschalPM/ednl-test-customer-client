@@ -6,6 +6,8 @@ import { QuickActionComponent } from './pages/quick-action/quick-action.componen
 import { TeamsComponent } from './pages/teams/teams.component';
 import { SettingsComponent } from './pages/settings/settings.component'
 import { NewComponent as CustomersNewComponent } from './pages/customers/new/new.component';
+import { ShowComponent as CustomersShowComponent } from './pages/customers/show/show.component';
+import { EditComponent as CustomersEditComponent } from './pages/customers/edit/edit.component';
 
 export const routes: Routes = [
     {
@@ -15,6 +17,14 @@ export const routes: Routes = [
     {
         path: 'customers/new',
         component: CustomersNewComponent
+    },
+    {
+        path: 'customers/:id',
+        component: CustomersShowComponent
+    },
+    {
+        path: 'customers/edit/:id',
+        component: CustomersEditComponent
     },
     {
         path: 'quick-action',

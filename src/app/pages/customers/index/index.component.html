@@ -18,7 +18,9 @@
     <div>
         <ag-grid-angular rowModelType='infinite' [pagination]="true" [paginationPageSize]="50" [cacheBlockSize]="50"
             [columnDefs]="columnDefs" [animateRows]="true" [rowHeight]="40" rowClass='cursor-pointer'
-            [datasource]="datasource" class="h-[calc(100vh-50px)]" (gridReady)="onGridReady($event)">
+            [datasource]="datasource" class="h-[calc(100vh-50px)]" (gridReady)="onGridReady($event)" 
+            (cellClicked)="onCellClicked($event)"
+            >
         </ag-grid-angular>
     </div>
 </section>

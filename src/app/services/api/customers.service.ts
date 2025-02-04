@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { apiUrlFactory } from '../constants/globals';
+import { apiUrlFactory } from '../../constants/globals';
 
 type PaginatedCustomerResource = {
   data: any,

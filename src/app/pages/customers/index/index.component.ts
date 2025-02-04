@@ -1,10 +1,11 @@
 import { Component, OnDestroy } from '@angular/core';
-import { CustomersService } from '../../../services/customers.service';
+import { CustomersService as CustomersApiService } from '../../../services/api/customers.service';
+import { CustomerFormService } from '../../../services/form/customer-form.service';
 import { AgGridAngular } from 'ag-grid-angular';
-import type { ColDef, GridApi, GridOptions, GridReadyEvent, IGetRowsParams } from 'ag-grid-community';
+import type { ColDef, GridApi, GridReadyEvent, IGetRowsParams } from 'ag-grid-community';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
-import { RouterModule } from '@angular/router';
-import { of, Subject, takeUntil, distinctUntilChanged, debounceTime, BehaviorSubject } from 'rxjs';
+import { Router, RouterModule } from '@angular/router';
+import { Subject, takeUntil, distinctUntilChanged, debounceTime, BehaviorSubject } from 'rxjs';
 import { SearchInputComponent } from '../../../widgets/search-input/search-input.component';
 import { HeadingComponent } from '../../../components/heading/heading.component';
 import { AddPersonComponent } from '../../../svgs/add-person/add-person.component';
@@ -23,6 +24,30 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 export class IndexComponent implements OnDestroy {
   gridApi!: GridApi
   columnDefs: ColDef[] = [
+    {
+      headerName: 'Actions',
+      cellRenderer() {
+        return `
+        <button class='cursor-pointer hover:scale-120 transition'>
+        <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+            width="14"
+            height="14"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5l4 4-12 12h-4v-4l12-12z"></path>
+          </svg>
+          </button>
+          `
+      },
+      width: 50
+    },
     {
       field: 'firstname',
       headerName: 'Name',
@@ -58,7 +83,11 @@ export class IndexComponent implements OnDestroy {
 
   private destroy$ = new Subject<void>()
 
-  constructor(private readonly customersService: CustomersService) { }
+  constructor(
+    private readonly customersApiService: CustomersApiService,
+    private readonly customerFormService: CustomerFormService,
+    private readonly router: Router
+  ) { }
 
 
   ngOnInit(): void {
@@ -68,7 +97,7 @@ export class IndexComponent implements OnDestroy {
   }
 
   getTotalCustomers() {
-    this.customersService.getPaginatedCustomers()
+    this.customersApiService.getPaginatedCustomers()
       .pipe(takeUntil(this.destroy$))
       .subscribe(v => this.totalCustomers = v.meta.total)
   }
@@ -80,7 +109,7 @@ export class IndexComponent implements OnDestroy {
         const pageSize = params.endRow - params.startRow
         const pageNumber = params.startRow / pageSize + 1;
 
-        this.customersService.getPaginatedCustomers(pageSize, pageNumber, this.searchText)
+        this.customersApiService.getPaginatedCustomers(pageSize, pageNumber, this.searchText)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (value) => {
@@ -102,6 +131,13 @@ export class IndexComponent implements OnDestroy {
     this.searchText$.next(ev.target.value)
   }
 
+  onCellClicked(ev: any) {
+    if (ev.colDef.headerName === 'Actions') {
+      this.router.navigateByUrl(`/customers/edit/${ev.data.id}`)
+      this.customerFormService.setActiveCustomer(ev.data)
+    }
+  }
+
   searchListener() {
     this.searchText$
       .pipe(distinctUntilChanged(), debounceTime(500), takeUntil(this.destroy$))
@@ -109,7 +145,6 @@ export class IndexComponent implements OnDestroy {
         next: (value) => {
           this.searchText = value
           this.gridApi && this.gridApi.purgeInfiniteCache()
-
         },
       })
 

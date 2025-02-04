@@ -1,19 +1,14 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CustomersService } from '../../../services/api/customers.service';
-import { Router } from '@angular/router';
-import { HeadingComponent } from '../../../components/heading/heading.component';
+import { FormGroup } from '@angular/forms';
 import { CustomerFormService } from '../../../services/form/customer-form.service';
 
-
 @Component({
-  selector: 'app-new',
-  imports: [ReactiveFormsModule, CommonModule, HeadingComponent],
-  templateUrl: './new.component.html',
-  styleUrl: './new.component.css'
+  selector: 'app-edit',
+  imports: [],
+  templateUrl: './edit.component.html',
+  styleUrl: './edit.component.css'
 })
-export class NewComponent {
+export class EditComponent {
   customerFormGroup!: FormGroup
   controlNames: string[] = []
 
@@ -40,7 +35,7 @@ export class NewComponent {
   hasError(controlName: string) {
     return this.customerFormService.hasError(this.customerFormGroup, controlName)
   }
-  onCreate() {
-    this.customerFormService.onCreate(this.customerFormGroup)
+  onEdit() {
+    this.customerFormService.onEdit(this.customerFormGroup)
   }
 }

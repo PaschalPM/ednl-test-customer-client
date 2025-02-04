@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { SidebarComponent } from "./widgets/sidebar/sidebar.component";
 
 @Component({
@@ -11,7 +11,10 @@ import { SidebarComponent } from "./widgets/sidebar/sidebar.component";
 export class AppComponent {
   title = 'customer-client';
 
-  ngOnInit(): void {
+  constructor(private readonly router: Router) {
 
+  }
+  ngOnInit(): void {
+    this.router.navigateByUrl('/customers')
   }
 }
