@@ -70,7 +70,7 @@ export class IndexComponent implements OnDestroy {
       headerName: 'Joined At',
       field: 'created_at',
       valueFormatter: (params) => {
-        return this.utils.getDateFormatter().format(new Date(params.data.created_at))
+        return params.data && this.utils.getDateFormatter().format(new Date(params.data.created_at))
       }
     }
   ]

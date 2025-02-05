@@ -7,7 +7,7 @@
             <app-heading text="Customers" />
             <small>Create, edit and manage your customers.</small>
         </div>
-        <app-action-button type="add"/>
+        <app-action-button type="add" />
     </div>
     <app-customer-overview-card [totalCustomers]="totalCustomers" />
     <app-search-input placeholder="Search Customers" (search)="onSearch($event)" [small]="true" />
@@ -16,8 +16,7 @@
         <ag-grid-angular rowModelType='infinite' [pagination]="true" [paginationPageSize]="50" [cacheBlockSize]="50"
             [columnDefs]="columnDefs" [animateRows]="true" [rowHeight]="40" rowClass='cursor-pointer'
             [datasource]="datasource" class="h-[calc(100vh-50px)]" (gridReady)="onGridReady($event)"
-            (cellClicked)="onCellClicked($event)"
-            >
+            (cellClicked)="onCellClicked($event)">
         </ag-grid-angular>
     </div>
 </app-app-layout>
