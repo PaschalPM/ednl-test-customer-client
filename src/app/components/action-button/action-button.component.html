@@ -1,0 +1,14 @@
+@if(type() === 'add')
+{
+<a routerLink="/customers/new" class=" bg-[#0053A6] text-white flex items-center gap-2 px-4 rounded-md h-[40px]">
+    <ng-container *ngComponentOutlet="icon;"></ng-container>
+    {{ text }}
+</a>
+}
+@else {
+<button (click)="handleClick.emit($event)" [class.bg-red-500]="type() === 'delete'" [class.bg-[#0053A6]]="type() === 'edit'"
+    class="text-white flex items-center gap-2 px-4 rounded-md h-[40px] cursor-pointer">
+    <ng-container *ngComponentOutlet="icon;"></ng-container>
+    {{ text }}
+</button>
+}

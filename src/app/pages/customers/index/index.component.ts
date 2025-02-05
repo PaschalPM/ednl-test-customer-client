@@ -8,16 +8,26 @@ import { Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil, distinctUntilChanged, debounceTime, BehaviorSubject } from 'rxjs';
 import { SearchInputComponent } from '../../../widgets/search-input/search-input.component';
 import { HeadingComponent } from '../../../components/heading/heading.component';
-import { AddPersonComponent } from '../../../svgs/add-person/add-person.component';
-import { VectorComponent } from '../../../svgs/vector/vector.component';
 import { CustomerOverviewCardComponent } from '../../../widgets/customer-overview-card/customer-overview-card.component';
+import { GridActionBtnComponent } from '../../../components/grid-action-btn/grid-action-btn.component';
+import { AppLayoutComponent } from '../../../layouts/app-layout/app-layout.component';
+import { ActionButtonComponent } from '../../../components/action-button/action-button.component';
+import { UtilsService } from '../../../services/utils.service';
 
 // Register all Community features
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 @Component({
   selector: 'app-index',
-  imports: [AgGridAngular, RouterModule, SearchInputComponent, HeadingComponent, AddPersonComponent, VectorComponent, CustomerOverviewCardComponent],
+  imports: [
+    AppLayoutComponent,
+    AgGridAngular,
+    RouterModule,
+    SearchInputComponent,
+    HeadingComponent,
+    CustomerOverviewCardComponent,
+    ActionButtonComponent
+  ],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css'
 })
@@ -26,27 +36,12 @@ export class IndexComponent implements OnDestroy {
   columnDefs: ColDef[] = [
     {
       headerName: 'Actions',
-      cellRenderer() {
-        return `
-        <button class='cursor-pointer hover:scale-120 transition'>
-        <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-            width="14"
-            height="14"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M12 20h9"></path>
-            <path d="M16.5 3.5l4 4-12 12h-4v-4l12-12z"></path>
-          </svg>
-          </button>
-          `
+      cellRenderer: GridActionBtnComponent,
+      cellRendererParams: {
+        onEditBtnClicked: this.onEditClicked.bind(this),
+        onDeleteBtnClicked: this.onDeleteClicked.bind(this)
       },
-      width: 50
+      width: 100
     },
     {
       field: 'firstname',
@@ -73,7 +68,10 @@ export class IndexComponent implements OnDestroy {
     },
     {
       headerName: 'Joined At',
-      field: 'created_at'
+      field: 'created_at',
+      valueFormatter: (params) => {
+        return this.utils.getDateFormatter().format(new Date(params.data.created_at))
+      }
     }
   ]
   datasource: any
@@ -86,7 +84,8 @@ export class IndexComponent implements OnDestroy {
   constructor(
     private readonly customersApiService: CustomersApiService,
     private readonly customerFormService: CustomerFormService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly utils: UtilsService
   ) { }
 
 
@@ -113,9 +112,15 @@ export class IndexComponent implements OnDestroy {
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (value) => {
+              if (value.data.length === 0) {
+                this.gridApi.showNoRowsOverlay()
+              }
+              else {
+                this.gridApi.hideOverlay()
+              }
               params.successCallback(value.data, value.meta.total)
             },
-            error(err) {
+            error() {
               params.failCallback()
             }
           })
@@ -133,9 +138,11 @@ export class IndexComponent implements OnDestroy {
 
   onCellClicked(ev: any) {
     if (ev.colDef.headerName === 'Actions') {
-      this.router.navigateByUrl(`/customers/edit/${ev.data.id}`)
-      this.customerFormService.setActiveCustomer(ev.data)
+      return
     }
+    const customerId = ev.data.id
+    this.router.navigateByUrl(`/customers/${customerId}`)
+    this.customerFormService.setActiveCustomer(ev.data)
   }
 
   searchListener() {
@@ -147,8 +154,23 @@ export class IndexComponent implements OnDestroy {
           this.gridApi && this.gridApi.purgeInfiniteCache()
         },
       })
-
   }
+
+  onEditClicked(params: any) {
+    this.router.navigateByUrl(`/customers/edit/${params.rowData.id}`)
+    this.customerFormService.setActiveCustomer(params.rowData)
+  }
+
+  onDeleteClicked(params: any) {
+    if (confirm('Are you sure you want to delete this customer?')) {
+      this.customersApiService.deleteCustomer(params.rowData.id)
+        .subscribe(v => {
+          this.gridApi.purgeInfiniteCache()
+          this.getTotalCustomers()
+        })
+    }
+  }
+
 
   ngOnDestroy(): void {
     this.destroy$.next()

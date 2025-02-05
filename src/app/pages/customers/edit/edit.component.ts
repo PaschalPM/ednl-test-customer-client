@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CustomerFormService } from '../../../services/form/customer-form.service';
-import { HeadingComponent } from '../../../components/heading/heading.component';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { FormLayoutComponent } from '../../../layouts/form-layout/form-layout.component';
 import { CustomersService } from '../../../services/api/customers.service';
-import { ActivatedRoute } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-edit',
-  imports: [HeadingComponent, ReactiveFormsModule, CommonModule],
+  imports: [FormLayoutComponent, ReactiveFormsModule, CommonModule],
   templateUrl: './edit.component.html',
   styleUrl: './edit.component.css'
 })
@@ -25,32 +25,45 @@ export class EditComponent {
 
   constructor(
     public readonly customerFormService: CustomerFormService,
-    private readonly customerApiService: CustomersService,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly customerApiService: CustomersService
   ) {
     this.customerFormGroup = this.customerFormService.getFormGroup()
     this.setControlNames()
     this.syncCustomerDataAndSetTitle()
+  }
 
+  get isFormDirty() {
+    let isDifferent = false
+
+    for (const key of Object.keys(this.originalValue)) {
+      const formValue = this.customerFormGroup.value[key];
+      const originalValue = this.originalValue[key];
+
+      if (formValue !== originalValue) {
+        if (['voters_card', 'id_card', 'drivers_licence'].includes(key)) {
+          if (!!originalValue !== !!formValue) {
+            isDifferent = true;
+            break;
+          }
+        } else {
+          isDifferent = true;
+          break;
+        }
+      }
+    }
+
+    return this.customerFormGroup && this.customerFormGroup.dirty && isDifferent
   }
 
   syncCustomerDataAndSetTitle() {
-    this.customerData = this.customerFormService.getActiveCustomer()
-    if (!this.customerData) {
-      const customerId = this.route.snapshot.params['id']
-      this.customerApiService.getCustomerById(customerId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((v: any) => {
-          this.customerData = v.data
-          this.setTitleAndFormGroup()
-          this.setOriginalValue(this.customerFormGroup)
-        })
-    }
-    else {
+    const customerId = this.route.snapshot.params['id']
+    this.customerFormService.retrieveCustomerData(customerId, (customerData) => {
+      this.customerData = customerData
       this.setTitleAndFormGroup()
       this.setOriginalValue(this.customerFormGroup)
-    }
-
+    })
   }
 
   setControlNames() {
@@ -75,27 +88,14 @@ export class EditComponent {
     this.customerFormService.onUpdate(this.customerFormGroup, this.customerData.id)
   }
 
-  get isFormDirty() {
-    let isDifferent = false
-
-    for (const key of Object.keys(this.originalValue)) {
-      const formValue = this.customerFormGroup.value[key];
-      const originalValue = this.originalValue[key];
-
-      if (formValue !== originalValue) {
-        if (['voters_card', 'id_card', 'drivers_licence'].includes(key)) {
-          if (!!originalValue !== !!formValue) {
-            isDifferent = true;
-            break;
-          }
-        } else {
-          isDifferent = true;
-          break;
-        }
-      }
+  onDeleteClicked(ev: any) {
+    if (confirm('Are you sure you want to delete this customer?')) {
+      this.customerApiService.deleteCustomer(this.customerData.id)
+        .subscribe(v => {
+          alert("Customer deleted successfully")
+          this.router.navigateByUrl(`/customers`)
+        })
     }
-
-    return this.customerFormGroup && this.customerFormGroup.dirty && isDifferent
   }
 
   private setOriginalValue(formGroup: FormGroup) {

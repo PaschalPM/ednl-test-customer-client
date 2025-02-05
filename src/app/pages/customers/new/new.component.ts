@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { HeadingComponent } from '../../../components/heading/heading.component';
 import { CustomerFormService } from '../../../services/form/customer-form.service';
+import { FormLayoutComponent } from '../../../layouts/form-layout/form-layout.component';
 
 
 @Component({
   selector: 'app-new',
-  imports: [ReactiveFormsModule, CommonModule, HeadingComponent],
+  imports: [ReactiveFormsModule, CommonModule, FormLayoutComponent],
   templateUrl: './new.component.html',
   styleUrl: './new.component.css'
 })

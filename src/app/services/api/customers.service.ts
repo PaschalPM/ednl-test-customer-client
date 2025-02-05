@@ -32,13 +32,17 @@ export class CustomersService {
   storeCustomer(data: any) {
     return this.http.post(apiUrlFactory('/customers'), data)
   }
-  
+
   getCustomerById(id: string) {
     return this.http.get(apiUrlFactory(`/customers/${id}`))
   }
 
   updateCustomer(data: any, id: number) {
     return this.http.put(apiUrlFactory(`/customers/${id}`), data)
+  }
+
+  deleteCustomer(id: number) {
+    return this.http.delete(apiUrlFactory(`/customers/${id}`))
   }
 
 }

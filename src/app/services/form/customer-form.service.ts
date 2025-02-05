@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import {  Router } from '@angular/router';
 import { CustomersService } from '../api/customers.service';
 import { Observable, Subject, takeUntil } from 'rxjs';
 
@@ -13,7 +13,7 @@ export class CustomerFormService implements OnDestroy {
   private destroy$ = new Subject<void>()
 
   constructor(
-    private readonly customerService: CustomersService,
+    private readonly customerApiService: CustomersService,
     private readonly router: Router,
     private readonly fb: FormBuilder,
 
@@ -38,6 +38,21 @@ export class CustomerFormService implements OnDestroy {
       voters_card: [''],
       drivers_licence: ['']
     })
+  }
+
+  retrieveCustomerData(customerId: string, cb: (customerData: any) => void) {
+    const customerData = this.getActiveCustomer()
+    if (!customerData) {
+      this.customerApiService.getCustomerById(customerId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((v: any) => {
+          cb(v.data)
+        })
+    }
+    else {
+      cb(customerData)
+    }
+
   }
 
   setControlNames(formGroup: FormGroup, controlNames: string[]) {
@@ -71,11 +86,11 @@ export class CustomerFormService implements OnDestroy {
 
 
   onCreate(formGroup: FormGroup) {
-    this.onMutate(formGroup, 'create', this.customerService.storeCustomer(formGroup.value))
+    this.onMutate(formGroup, 'create', this.customerApiService.storeCustomer(formGroup.value))
   }
 
   onUpdate(formGroup: FormGroup, id: number) {
-    this.onMutate(formGroup, 'update', this.customerService.updateCustomer(formGroup.value, id))
+    this.onMutate(formGroup, 'update', this.customerApiService.updateCustomer(formGroup.value, id))
   }
 
   setActiveCustomer(data: any) {

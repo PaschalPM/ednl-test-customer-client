@@ -1,1 +1,14 @@
-<p>show works!</p>
+<app-form-layout [title]="title" type="view" (handleDelete)="onDeleteClicked($event)" (handleEdit)="onEditClicked($event)">
+    <form [formGroup]="customerFormGroup" class="flex flex-wrap gap-2 justify-between items-center p-6 shadow-2xl">
+        @for(controlName of controlNames; track controlName){
+        <div class="flex flex-col w-[300px] my-2 space-y-2">
+            <div>
+                <label [for]="controlName" class="text-lg font-bold"> {{ formatLabel(controlName) }} </label>
+            </div>
+            <input readonly type="text" [formControlName]="controlName" [id]="controlName" placeholder="Enter text..."
+                class="w-full px-4  py-2 border text-gray-600 border-gray-100 rounded-lg focus:outline-none focus:ring-2  shadow-sm" />
+
+        </div>
+        }
+    </form>
+</app-form-layout>
